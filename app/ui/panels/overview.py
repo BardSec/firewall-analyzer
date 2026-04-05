@@ -208,8 +208,8 @@ class OverviewPanel(QScrollArea):
                 rows.append([f.severity, f.finding_type, f.title, ", ".join(f.rule_ids)])
 
             table = make_table(headers, rows)
-            table.setSelectionBehavior(table.SelectRows)
-            table.setSelectionMode(table.SingleSelection)
+            table.setSelectionBehavior(table.SelectionBehavior.SelectRows)
+            table.setSelectionMode(table.SelectionMode.SingleSelection)
             table.cellDoubleClicked.connect(self._on_finding_clicked)
             # Also single-click
             table.cellClicked.connect(self._on_finding_clicked)
