@@ -61,6 +61,6 @@ if sys.platform == 'darwin':
             'NSHighResolutionCapable': True,
             'LSMinimumSystemVersion': '12.0',
             'NSHumanReadableCopyright': 'Copyright \u00a9 2026 BardSec',
-            'LSApplicationCategoryType': 'public.app-category.utilities',
+            'LSApplicationCategoryType': 'public.app-category.developer-tools',
         },
     )
