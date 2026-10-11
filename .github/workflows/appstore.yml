@@ -57,7 +57,11 @@ jobs:
         env:
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: |
-          IDENTITY="3rd Party Mac Developer Application: Wesley Lombardo ($APPLE_TEAM_ID)"
+          # Look the identity up from the imported cert instead of hardcoding the
+          # certificate holder's name; mask it so it stays out of public logs.
+          IDENTITY=$(security find-identity -v build.keychain | grep -oE '"3rd Party Mac Developer Application: [^"]+"' | grep -F "($APPLE_TEAM_ID)" | head -1 | tr -d '"')
+          if [ -z "$IDENTITY" ]; then echo "::error::No '3rd Party Mac Developer Application' identity for team $APPLE_TEAM_ID in build.keychain"; exit 1; fi
+          echo "::add-mask::$IDENTITY"
 
           # Sign all nested frameworks and dylibs
           find "dist/Firewall Analyzer.app" -name "*.dylib" -o -name "*.so" -o -name "*.framework" | while read f; do
@@ -77,7 +81,11 @@ jobs:
         env:
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: |
-          INSTALLER_IDENTITY="3rd Party Mac Developer Installer: Wesley Lombardo ($APPLE_TEAM_ID)"
+          # Look the identity up from the imported cert instead of hardcoding the
+          # certificate holder's name; mask it so it stays out of public logs.
+          INSTALLER_IDENTITY=$(security find-identity -v build.keychain | grep -oE '"3rd Party Mac Developer Installer: [^"]+"' | grep -F "($APPLE_TEAM_ID)" | head -1 | tr -d '"')
+          if [ -z "$INSTALLER_IDENTITY" ]; then echo "::error::No '3rd Party Mac Developer Installer' identity for team $APPLE_TEAM_ID in build.keychain"; exit 1; fi
+          echo "::add-mask::$INSTALLER_IDENTITY"
 
           productbuild --component "dist/Firewall Analyzer.app" /Applications \
             --sign "$INSTALLER_IDENTITY" \
